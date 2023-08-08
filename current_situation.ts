@@ -180,23 +180,77 @@ class SegmentApi {
             this.model.method4({ id: 1, countryCode: Constants.FR.code as COUNTRY_CODE });
         }
         method5() {
-            this.model.method5({ id: 1 });
+            this.model.method5({ id: 1, countryCode: FR.code.toUpperCase() as COUNTRY_CODE });
+        }
+        method6() {
+            this.model.method6({ id: 1, countryCode: SegmentAPI.CountryCode.FR });
         }
     }
-    class Store3 {}
+    class Store3 {
+        // Store3 better typed [.ts]
+
+        model = new Model3()
+
+        method1() {
+            this.model.method1({ id: 1, countryCode: 'FR' });
+        }
+        method2() {
+            this.model.method2({ id: 1, countryCode: COUNTRY_CODE.FR });
+        }
+        method3() {
+            this.model.method3({ id: 1, countryCode: FR.code.toUpperCase() as 'FR' });
+        }
+        method4() {
+            this.model.method4({ id: 1, countryCode: Constants.FR.code });
+        }
+        method5() {
+            this.model.method5({ id: 1, countryCode: FR.code });
+        }
+        method6() {
+            this.model.method6({ id: 1, countryCode: COUNTRY_CODE.FR });
+        }
+    }
 }
 
 // Insight API
 {
-    // controllers
-    class Controller1 {}
-    class Controller2 {}
-    class Controller3 {}
+    enum CountryCode {
+        GB = 'GB',
+        FR = 'FR',
+        DE = 'DE',
+        IT = 'IT',
+    }
+    type Brand = {
+        countryCode: CountryCode;
+    }
+
+    const getCountryCode = (countryCode: CountryCode): Exclude<CountryCode, 'IT' | 'DE'> => {
+        if (countryCode === CountryCode.IT) return CountryCode.GB;
+        if (countryCode === CountryCode.DE) return  CountryCode.FR
+
+        return countryCode;
+    }
+
+    class Service {
+        elastic = new Query();
+
+        method1(brand: Brand) {
+            return this.elastic.method1(brand);
+        }
+        method2(brand: Brand) {
+            return this.elastic.method2(brand.countryCode);
+        }
+    }
 
     // Elastic Queries
-    class Query1 {}
-    class Query2 {}
-    class Query3 {}
+    class Query {
+        method1(brand: Brand) {}
+        method2(countryCode: CountryCode) {}
+        method3(countryCode: CountryCode) {
+            const validCountryCode = getCountryCode(countryCode);
+            //...
+        }
+    }
 }
 
 // Sense API
