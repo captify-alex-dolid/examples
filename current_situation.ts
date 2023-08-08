@@ -9,8 +9,12 @@ namespace SegmentAPI {
     export enum CountryCode {
         GB = 'GB',
         FR = 'FR',
+        US = 'US',
         DE = 'DE',
-        US = 'US'
+        ES = 'ES',
+        CA = 'CA',
+        IT = 'IT',
+        AU = 'AU',
     }
     export type RequestParams = {
         id: number;
@@ -18,7 +22,9 @@ namespace SegmentAPI {
     }
 }
 class SegmentApi {
-    getSegments(params: SegmentAPI.RequestParams) {}
+    getSegments(params: SegmentAPI.RequestParams): [] {
+        return [];
+    }
 }
 
 
@@ -233,6 +239,7 @@ class SegmentApi {
 
     class Service {
         elastic = new Query();
+        segmentApi = new SegmentApi();
 
         method1(brand: Brand) {
             return this.elastic.method1(brand);
@@ -240,17 +247,84 @@ class SegmentApi {
         method2(brand: Brand) {
             return this.elastic.method2(brand.countryCode);
         }
+        method3(brand: Brand) {
+            const segments = this.segmentApi.getSegments({
+                id: 1,
+                countryCode: getCountryCode(brand.countryCode) as unknown as SegmentAPI.CountryCode
+            });
+            return this.elastic.method3(brand, segments);
+        }
     }
 
     // Elastic Queries
     class Query {
         method1(brand: Brand) {}
         method2(countryCode: CountryCode) {}
-        method3(countryCode: CountryCode) {
-            const validCountryCode = getCountryCode(countryCode);
+        method3(brand: Brand, segments: []) {
+            const validCountryCode = getCountryCode(brand.countryCode);
             //...
         }
     }
 }
 
 // Sense API
+{
+    const GB = { id: 1, code: 'gb', lang: 'en' } as const;
+    const FR = { id: 1, code: 'fr', lang: 'fr' } as const;
+    const DE = { id: 1, code: 'de', lang: 'de' } as const;
+    const COUNTRIES = [GB, FR, DE];
+
+    type Country = typeof GB.code | typeof FR.code | typeof DE.code;
+    enum COUNTRY_CODE {
+        GB = 'GB',
+        FR = 'FR',
+        DE = 'DE',
+    }
+
+    const getCountryCode = (countryCode: Country): Uppercase<Country> => {
+        if (countryCode.toUpperCase() === COUNTRY_CODE.DE) return COUNTRY_CODE.GB;
+
+        return countryCode.toUpperCase() as Uppercase<Country>;
+    }
+
+    class Service {
+        dal = new Dal();
+        segmentApi = new SegmentApi();
+
+        method1(req) {
+            return this.dal.method1(req);
+        }
+        method2(req: { countryCode: string }) {
+            return this.dal.method2(req.countryCode);
+        }
+        method3(req: { countryCode: Country }) {
+            const segments = this.segmentApi.getSegments({
+                id: 1,
+                countryCode: getCountryCode(req.countryCode) as unknown as SegmentAPI.CountryCode
+            });
+            return this.dal.method3(req.countryCode, segments);
+        }
+        method4(req: { countryCode: COUNTRY_CODE }) {
+            return this.dal.method1(req.countryCode);
+        }
+        method5(req: { countries: typeof COUNTRIES}) {
+            return this.dal.method4(req.countries);
+        }
+    }
+
+    class Dal {
+        method1(countryCode: COUNTRY_CODE) {}
+        method2(countryCode: string) {
+            const country = COUNTRIES.some(country => country.code.toUpperCase() === countryCode);
+            //...
+        }
+        method3(countryCode: Country, segments: []) {
+            const validCountryCode = getCountryCode(countryCode);
+            //...
+        }
+        method4(countries: typeof COUNTRIES) {
+            const country = countries.some(country => country.code.toUpperCase() === COUNTRY_CODE.DE);
+            //...
+        }
+    }
+}
