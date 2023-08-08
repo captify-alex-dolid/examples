@@ -3,7 +3,12 @@ namespace Constants {
     export const GB = { id: 1, code: 'GB', lang: 'en' } as const;
     export const FR = { id: 1, code: 'FR', lang: 'fr' } as const;
     export const DE = { id: 1, code: 'DE', lang: 'de' } as const;
-    export const COUNTRIES = [GB, FR, DE];
+    export const US = { id: 1, code: 'US', lang: 'en' } as const;
+    export const ES = { id: 1, code: 'ES', lang: 'es' } as const;
+    export const CA = { id: 1, code: 'CA', lang: 'en' } as const;
+    export const IT = { id: 1, code: 'IT', lang: 'it' } as const;
+    export const AU = { id: 1, code: 'AU', lang: 'en' } as const;
+    export const COUNTRIES = [GB, FR, DE, US, ES, CA, IT, AU];
 }
 namespace SegmentAPI {
     export enum CountryCode {
@@ -14,7 +19,6 @@ namespace SegmentAPI {
         ES = 'ES',
         CA = 'CA',
         IT = 'IT',
-        AU = 'AU',
     }
     export type RequestParams = {
         id: number;
